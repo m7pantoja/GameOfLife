@@ -26,11 +26,6 @@ class Game:
 
 
     def logic(self):
-
-        def __locate_cell(position):
-            return _cell_class.Cell(((position[0] // self.cell_dim) * self.cell_dim, 
-                                     (position[1] // self.cell_dim) * self.cell_dim),
-                                     self.cell_dim)
         
         if self.mode == "Pause":
             for event in pygame.event.get():
@@ -43,9 +38,12 @@ class Game:
                         if self.start_stop_button.collidepoint(p):
                             self.mode = "Running"
                         else:
-                            self.grid.add(__locate_cell(p))
+                            self.grid.add(_cell_class.locate_cell(p,self.cell_dim))
                     if event.button == 3:
-                        self.grid.remove(__locate_cell(event.pos))
+                        self.grid.remove(_cell_class.locate_cell(event.pos, self.cell_dim))
+                if event.type == pygame.MOUSEWHEEL:
+                    self.cell_dim += event.y
+                    self.grid.fit_dimension(self.cell_dim)
 
         if self.mode == "Running":
             self.grid.update()

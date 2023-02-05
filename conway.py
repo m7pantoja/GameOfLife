@@ -13,8 +13,6 @@ def main():
 main()
 
 
-# El problema está en que los objetos de Cell son unhasheables y los estás intentando meter en un set
-
 
 
 
