@@ -16,8 +16,8 @@ class Game:
         pygame.display.set_caption("Game of Life")
         self.grid = grid_class.Grid()
         self.mode = "Pause"
-        self.speed = 100
-        self.zoom_level = 0
+        self.speed = 20
+        self.zoom_level = 5
 
     def logic(self):
         if self.mode == "Pause":
@@ -34,6 +34,11 @@ class Game:
                             self.grid.add(grid_class.Grid.pixel_to_coord(p, self.zoom_level))
                     if event.button == 3:
                         self.grid.remove(grid_class.Grid.pixel_to_coord(event.pos, self.zoom_level))
+                if event.type == pygame.MOUSEWHEEL:
+                    if (event.y < 0) and (event.y + self.zoom_level > 1):
+                        self.zoom_level += event.y
+                    if (event.y > 0) and (self.zoom_level + event.y < 14):
+                        self.zoom_level += event.y
         if self.mode == "Running":
             self.grid.update()
             for event in pygame.event.get():
@@ -44,6 +49,11 @@ class Game:
                 and event.button == 1 \
                 and self.start_stop_button.collidepoint(event.pos):
                     self.mode = "Pause"
+                if event.type == pygame.MOUSEWHEEL:
+                    if (event.y < 0) and (event.y + self.zoom_level > 1):
+                        self.zoom_level += event.y
+                    if (event.y > 0) and (self.zoom_level + event.y < 14):
+                        self.zoom_level += event.y
 
     def graphics(self):
         self.screen.fill(VERDE_NOCHE)
