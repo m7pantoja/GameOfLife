@@ -1,54 +1,34 @@
-import pygame
-from _auxiliar import *
-
 
 
 class Grid:
 
-    def __init__(self,alive_cells = []):
-        self.alive_cells = noreps(alive_cells)
-        self.cells = noreps([ncell for ac in self.alive_cells for ncell in Grid.neighbors(ac)] + self.alive_cells)
-
-    def neighbors(c):
-        xs = [pygame.Rect(x, y, CELL_DIM, CELL_DIM)
-            for x in range(c.left - CELL_DIM, c.right+ CELL_DIM, CELL_DIM) 
-            for y in range(c.top - CELL_DIM, c.bottom + CELL_DIM, CELL_DIM)]
-        xs.remove(c)
-        return xs
+    def __init__(self, alive_cells = []):
+        self.alive_cells = alive_cells
+        self.cells = list({ncell for ac in self.alive_cells for ncell in ac.neighbors()} | set(self.alive_cells))
 
     def add(self, cell):
-        if cell in self.alive_cells:
-            pass
-        else:
-            self.alive_cells.append(cell)
-            for ncell in Grid.neighbors(cell):
-                if ncell in self.cells:
-                    pass
-                else:
-                    self.cells.append(ncell)
+        self.alive_cells.append(cell)
+        for ncell in cell.neighbors():
+            self.cells.append(ncell)
 
-    def remove(self,cell):                             
-        if cell not in self.alive_cells:
-            pass
-        else:
+    def remove(self,cell):
+        if cell in self.alive_cells:                        
             self.alive_cells.remove(cell)
 
     def update(self):
-        def _alive_neighbors(c):
+        def __alive_neighbors(cell):
             alive_neighbors = 0
-            for ncell in Grid.neighbors(c):
+            for ncell in cell.neighbors():
                 if ncell in self.alive_cells:
                     alive_neighbors += 1
             return alive_neighbors
 
         new_alive_cells = []
         for cell in self.cells:
-            if _alive_neighbors(cell) == 3:
+            if __alive_neighbors(cell) == 3:
                 new_alive_cells.append(cell)
-            elif ((_alive_neighbors(cell) == 2) and (cell in self.alive_cells)):
+            if ((__alive_neighbors(cell) == 2) and (cell in self.alive_cells)):
                 new_alive_cells.append(cell)
-            else:
-                pass
 
         new_grid = Grid(new_alive_cells)
 
