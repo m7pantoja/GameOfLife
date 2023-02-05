@@ -1,32 +1,25 @@
 import pygame
 import sys
-import _grids_class 
-import _cell_class
-
+import grid_class
 
 WHITE = (255,255,255)
 VERDE_NOCHE = (0,20,20)
-SIZE = (1200,750)
-
+SIZE = (1200,800)
 
 class Game:
-
     clock = pygame.time.Clock()
     screen = pygame.display.set_mode(SIZE)
     start_stop_button = pygame.Rect(500,655,200,60)
 
-
     def __init__(self):
         pygame.init()
         pygame.display.set_caption("Game of Life")
-        self.grid = _grids_class.Grid()
+        self.grid = grid_class.Grid()
         self.mode = "Pause"
-        self.speed = 20
-        self.cell_dim = 10
-
+        self.speed = 100
+        self.zoom_level = 0
 
     def logic(self):
-        
         if self.mode == "Pause":
             for event in pygame.event.get():
                 print(event)
@@ -38,13 +31,9 @@ class Game:
                         if self.start_stop_button.collidepoint(p):
                             self.mode = "Running"
                         else:
-                            self.grid.add(_cell_class.locate_cell(p,self.cell_dim))
+                            self.grid.add(grid_class.Grid.pixel_to_coord(p, self.zoom_level))
                     if event.button == 3:
-                        self.grid.remove(_cell_class.locate_cell(event.pos, self.cell_dim))
-                if event.type == pygame.MOUSEWHEEL:
-                    self.cell_dim += event.y
-                    self.grid.fit_dimension(self.cell_dim)
-
+                        self.grid.remove(grid_class.Grid.pixel_to_coord(event.pos, self.zoom_level))
         if self.mode == "Running":
             self.grid.update()
             for event in pygame.event.get():
@@ -56,19 +45,18 @@ class Game:
                 and self.start_stop_button.collidepoint(event.pos):
                     self.mode = "Pause"
 
-
     def graphics(self):
         self.screen.fill(VERDE_NOCHE)
         pygame.draw.rect(self.screen, WHITE, self.start_stop_button)
+        cell_dim = int(grid_class.Grid.cell_dim(self.zoom_level))
 
-        for x in range(self.cell_dim, SIZE[0], self.cell_dim):
+        for x in range(cell_dim, SIZE[0], cell_dim):
             pygame.draw.line(self.screen, WHITE, [x,0], [x,SIZE[1]])
-        for y in range(self.cell_dim, SIZE[1], self.cell_dim):
+        for y in range(cell_dim, SIZE[1], cell_dim):
             pygame.draw.line(self.screen, WHITE, [0,y], [SIZE[0],y])
 
-        for cell in self.grid.alive_cells:
-            pygame.draw.rect(self.screen, WHITE, [cell.x, cell.y, cell.dim, cell.dim])
-
+        for cell in self.grid.alive_cells():
+            pygame.draw.rect(self.screen, WHITE, grid_class.Grid.coord_to_pixel(cell, self.zoom_level))
 
     def settings(self):
         pygame.display.flip()

@@ -1,8 +1,7 @@
-import _game_class
-
+import game_class
 
 def main():    
-    game = _game_class.Game()    
+    game = game_class.Game()    
     
     while True:
         game.logic()
