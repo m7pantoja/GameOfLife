@@ -1,5 +1,4 @@
 import pygame
-import sys
 import grid_class
 
 WHITE = (255,255,255)
@@ -24,7 +23,7 @@ class Game:
             for event in pygame.event.get():
                 print(event)
                 if event.type == pygame.QUIT:
-                    sys.exit()
+                    quit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         p = event.pos
@@ -32,6 +31,7 @@ class Game:
                             self.mode = "Running"
                         else:
                             self.grid.add(grid_class.Grid.pixel_to_coord(p, self.zoom_level))
+                            self.mode = "Selection"
                     if event.button == 3:
                         self.grid.remove(grid_class.Grid.pixel_to_coord(event.pos, self.zoom_level))
                 if event.type == pygame.MOUSEWHEEL:
@@ -44,7 +44,7 @@ class Game:
             for event in pygame.event.get():
                 print(event)
                 if event.type == pygame.QUIT:
-                    sys.exit()
+                    quit()
                 if event.type == pygame.MOUSEBUTTONDOWN \
                 and event.button == 1 \
                 and self.start_stop_button.collidepoint(event.pos):
@@ -54,7 +54,15 @@ class Game:
                         self.zoom_level += event.y
                     if (event.y > 0) and (self.zoom_level + event.y < 14):
                         self.zoom_level += event.y
-
+        if self.mode == "Selection":
+            for event in pygame.event.get():
+                print(event)
+                if event.type != pygame.MOUSEBUTTONUP:
+                    p = event.pos
+                    self.grid.add(grid_class.Grid.pixel_to_coord(p, self.zoom_level))
+                else:
+                    self.mode = "Pause"
+                    
     def graphics(self):
         self.screen.fill(VERDE_NOCHE)
         pygame.draw.rect(self.screen, WHITE, self.start_stop_button)
