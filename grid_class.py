@@ -7,9 +7,28 @@ class Grid:
     def __init__(self,alive_cells = set ()):
         self.array = np.zeros((self.SHAPE))
         for cell in alive_cells:
-            self.array[cell[0]][cell[1]] = 1
+            self.add(cell)
+
+    def __is_close(cell, shape):
+        top_border = cell[1] < 2
+        left_border = cell[0] < 2
+        bottom_border = cell[1] > shape[1] -2
+        right_border = cell[0] > shape[0] -2
+        return (top_border, left_border, bottom_border, right_border)
+
+    def __increase_borders(self, borders):
+        if borders[0]:
+            self.array = np.insert(self.array, 0, np.zeros(self.array.shape[1]), 0)
+        if borders[1]:
+            self.array = np.insert(self.array, 0, np.zeros(self.array.shape[0]), 1)
+        if borders[2]:
+            self.array = np.insert(self.array, self.array.shape[0], np.zeros(self.array.shape[1]), 0)
+        if borders[3]:
+            self.array = np.insert(self.array, self.array.shape[1], np.zeros(self.array.shape[0]), 1)
 
     def add(self, cell):
+        close_borders = Grid.__is_close(cell, self.array.shape)
+        self.__increase_borders(close_borders)
         self.array[cell[0]][cell[1]] = 1
 
     def remove(self, cell):
@@ -41,8 +60,9 @@ class Grid:
                 if ((Grid.__alive_neighbors(self.array,cell) == 2) and (self.array[cell[0]][cell[1]] == 1)):
                     new_alive_cells.add(cell)
 
-        new_grid = Grid(new_alive_cells)
-        self.array = new_grid.array
+        self.array.fill(0)
+        for cell in new_alive_cells:
+            self.add(cell)
 
     def cell_dim(zoom_level):
         dim_values = [1, 2, 4, 5, 8, 10, 16, 20, 25, 40, 50, 80, 100, 200, 400]

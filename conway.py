@@ -8,5 +8,4 @@ def main():
         game.graphics()
         game.settings()
 
-
 main()
