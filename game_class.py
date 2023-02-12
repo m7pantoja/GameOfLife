@@ -2,13 +2,16 @@ import pygame
 import grid_class
 
 WHITE = (255,255,255)
+BLUE = (176,224,230)
 VERDE_NOCHE = (0,20,20)
 SIZE = (1200,800)
 
 class Game:
     clock = pygame.time.Clock()
     screen = pygame.display.set_mode(SIZE)
-    start_stop_button = pygame.Rect(500,655,200,60)
+    graphic_blocks = []
+    start_stop_button = pygame.Rect(505,655,200,60)
+    graphic_blocks.append(start_stop_button)
 
     def __init__(self):
         pygame.init()
@@ -65,7 +68,6 @@ class Game:
                     
     def graphics(self):
         self.screen.fill(VERDE_NOCHE)
-        pygame.draw.rect(self.screen, WHITE, self.start_stop_button)
         cell_dim = int(grid_class.Grid.cell_dim(self.zoom_level))
 
         for x in range(cell_dim, SIZE[0], cell_dim):
@@ -75,6 +77,9 @@ class Game:
 
         for cell in self.grid.alive_cells():
             pygame.draw.rect(self.screen, WHITE, grid_class.Grid.coord_to_pixel(cell, self.zoom_level))
+
+        for block in self.graphic_blocks:
+            pygame.draw.rect(self.screen, BLUE, block)
 
     def settings(self):
         pygame.display.flip()
